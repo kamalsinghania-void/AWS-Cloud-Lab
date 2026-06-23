@@ -1,0 +1,83 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Action": [
+				"lambda:CreateFunction",
+				"lambda:GetFunction",
+				"lambda:UpdateFunctionCode",
+				"lambda:DeleteFunction",
+				"lambda:InvokeFunction"
+			],
+			"Resource": [
+				"arn:aws:lambda:us-east-1:*:function:TestLambdaFunction",
+				"arn:aws:lambda:us-east-1:*:function:TestLambdaFunction:$LATEST"
+			],
+			"Effect": "Allow",
+			"Sid": "LambdaActions"
+		},
+		{
+			"Action": [
+				"logs:CreateLogGroup",
+				"logs:CreateLogStream",
+				"logs:PutLogEvents"
+			],
+			"Resource": "*",
+			"Effect": "Allow"
+		},
+		{
+			"Action": [
+				"iam:CreateRole",
+				"iam:DeleteRole",
+				"iam:GetRole"
+			],
+			"Resource": [
+				"arn:aws:iam::*:role/TestLambdaRole"
+			],
+			"Effect": "Allow",
+			"Sid": "IAMActions"
+		},
+		{
+			"Condition": {
+				"StringEquals": {
+					"iam:PassedToService": [
+						"lambda.amazonaws.com"
+					]
+				}
+			},
+			"Action": "iam:PassRole",
+			"Resource": "arn:aws:iam::*:role/TestLambdaRole",
+			"Effect": "Allow",
+			"Sid": "RoleAssumption"
+		},
+		{
+			"Condition": {
+				"ArnEquals": {
+					"iam:PolicyARN": [
+						"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+						"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+					]
+				}
+			},
+			"Action": [
+				"iam:DetachRolePolicy",
+				"iam:AttachRolePolicy"
+			],
+			"Resource": "arn:aws:iam::*:role/TestLambdaRole",
+			"Effect": "Allow",
+			"Sid": "AttachDetachRoles"
+		},
+		{
+			"Action": [
+				"iam:GetPolicy",
+				"iam:GetPolicyVersion"
+			],
+			"Resource": [
+				"arn:aws:iam::aws:policy/AmazonS3ReadOnlyAccess",
+				"arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+			],
+			"Effect": "Allow",
+			"Sid": "ViewRequiredPolicies"
+		}
+	]
+}
